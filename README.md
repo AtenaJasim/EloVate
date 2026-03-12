@@ -1,5 +1,5 @@
 # EloVate
-
+![EloVate Screenshot](./public/elovate.png)
 EloVate is an AI chess tutor built to help players improve while they play!
 
 While playing against a computer, users also get feedback on their moves. After each move, the app evaluates what was played, explains how strong or weak it was, and suggests a better move when one exists.
