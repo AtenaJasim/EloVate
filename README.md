@@ -1,16 +1,35 @@
-# React + Vite
+# EloVate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+EloVate is an AI chess tutor built to help players improve while they play!
 
-Currently, two official plugins are available:
+While playing against a computer, users also get feedback on their moves. After each move, the app evaluates what was played, explains how strong or weak it was, and suggests a better move when one exists.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- Play against the computer at different difficulty levels
+- Choose to play as White or Black
+- Get move-by-move feedback after every turn
+- See how your move was evaluated
+- Get a stronger suggested move from the engine
+- Undo the last move
+- Start a new game at any time
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## How It Works
 
-## Expanding the ESLint configuration
+EloVate uses Stockfish to analyze positions and compare the move you played against stronger engine choices.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+After you make a move, the app:
+- checks the position with the engine
+- rates your move
+- explains the result
+- shows a better move when available
+- then lets the computer respond
+
+## Tech Stack
+
+- React
+- Vite
+- JavaScript
+- chess.js
+- react-chessboard
+- Stockfish
