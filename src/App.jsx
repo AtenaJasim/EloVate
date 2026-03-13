@@ -4,10 +4,10 @@ import ChessBoardPanel from "./components/ChessBoardPanel";
 import ControlPanel from "./components/ControlPanel";
 import AnalysisPanel from "./components/AnalysisPanel";
 
-const BOT_DEPTH_BY_DIFFICULTY = {
-  easy: 3,
-  medium: 8,
-  hard: 15,
+const BOT_SETTINGS_BY_DIFFICULTY = {
+  easy: { depth: 5, skillLevel: 3 },
+  medium: { depth: 10, skillLevel: 12 },
+  hard: { depth: 18, skillLevel: 20 },
 };
 
 const ANALYSIS_DEPTH = 14;
@@ -252,8 +252,6 @@ function getRatingResult({
     };
   }
 
-  //Brilliant
-
   if (qualifiesAsBrilliant) {
     return {
       label: "Brilliant",
@@ -264,8 +262,6 @@ function getRatingResult({
     };
   }
 
-  //Best Move
-
   if (isBestMove) {
     return {
       label: "Best Move",
@@ -274,8 +270,6 @@ function getRatingResult({
       bestUciMove,
     };
   }
-
-  //Missed mating line
 
   if (isWinningMateLineForPlayer) {
     if (stillOkayAfterMove) {
@@ -296,8 +290,6 @@ function getRatingResult({
     };
   }
 
-  //Miss: had a strong advantage but let some of it slip
-
   if (
     hadStrongChance &&
     evalLoss >= RATING_THRESHOLDS.missMinLoss &&
@@ -313,7 +305,6 @@ function getRatingResult({
     };
   }
 
-  // Excellent: nearly as good as the best move
   if (evalLoss <= RATING_THRESHOLDS.excellentLoss) {
     return {
       label: "Excellent",
@@ -324,7 +315,6 @@ function getRatingResult({
     };
   }
 
-  // Good: solid but noticeably below best
   if (evalLoss <= RATING_THRESHOLDS.goodLoss) {
     return {
       label: "Good",
@@ -336,7 +326,6 @@ function getRatingResult({
     };
   }
 
-  //Inaccuracy: meaningful slip but not a serious mistake
   if (evalLoss <= RATING_THRESHOLDS.inaccuracyLoss) {
     return {
       label: "Inaccuracy",
@@ -348,7 +337,6 @@ function getRatingResult({
     };
   }
 
-  // Mistake
   if (evalLoss <= RATING_THRESHOLDS.mistakeLoss) {
     return {
       label: "Mistake",
@@ -360,7 +348,6 @@ function getRatingResult({
     };
   }
 
-  // Blunder
   return {
     label: "Blunder",
     description: `Blunder. This move dropped about ${formatPawnLoss(
@@ -484,13 +471,14 @@ export default function App() {
     gameRef.current = game;
   }, [game]);
 
-  function getBotDepth() {
-    return BOT_DEPTH_BY_DIFFICULTY[difficultyRef.current] ?? 8;
+  function getBotSettings() {
+    return BOT_SETTINGS_BY_DIFFICULTY[difficultyRef.current] ?? BOT_SETTINGS_BY_DIFFICULTY.medium;
   }
 
   function getSearchConfig(mode) {
     if (mode === "computer-move") {
-      return { depth: getBotDepth(), multiPv: 1 };
+      const { depth } = getBotSettings();
+      return { depth, multiPv: 1 };
     }
     if (mode === "rate-player-move") {
       return { depth: ANALYSIS_DEPTH, multiPv: 1 };
@@ -513,7 +501,12 @@ export default function App() {
       latestDepth: 0,
     };
 
+    // Apply skill level: reduced for computer-move, full strength for analysis
+    const skillLevel =
+      mode === "computer-move" ? getBotSettings().skillLevel : 20;
+
     setIsThinking(true);
+    engineRef.current.postMessage(`setoption name Skill Level value ${skillLevel}`);
     engineRef.current.postMessage(`setoption name MultiPV value ${multiPv}`);
     engineRef.current.postMessage(`position fen ${fen}`);
     engineRef.current.postMessage(`go depth ${depth}`);
@@ -818,8 +811,7 @@ export default function App() {
 
     setUndoStack((prev) => [...prev, positionBeforeMove]);
 
-    const playerUciMove = `${moveResult.from}${moveResult.to}${moveResult.promotion || ""
-      }`;
+    const playerUciMove = `${moveResult.from}${moveResult.to}${moveResult.promotion || ""}`;
 
     lastPlayerMoveMetaRef.current = {
       positionBeforeMove,
