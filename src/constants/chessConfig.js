@@ -1,6 +1,6 @@
 export const BOT_SETTINGS_BY_DIFFICULTY = {
-    easy: { depth: 5, skillLevel: 3 },
-    medium: { depth: 10, skillLevel: 12 },
+    easy: { depth: 2, skillLevel: 0 },
+    medium: { depth: 8, skillLevel: 8 },
     hard: { depth: 18, skillLevel: 20 },
 };
 
