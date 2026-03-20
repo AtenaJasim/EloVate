@@ -397,3 +397,16 @@ button {
 .analysis-wrap {
     width: 500px;
 }
+
+.checkmate-message {
+    font-family: 'Lora', serif;
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    color: black;
+}
+
+.settings-title {
+    text-align: center;
+}
