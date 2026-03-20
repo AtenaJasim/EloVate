@@ -410,3 +410,52 @@ button {
 .settings-title {
     text-align: center;
 }
+
+.promotion-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.promotion-option-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 10px;
+    border: 2px solid #d4c4b0;
+    border-radius: 10px;
+    background: transparent;
+    color: #3d2e22;
+    cursor: pointer;
+    transition: all 0.14s ease;
+}
+
+.promotion-option-btn:hover {
+    border-color: #ff66c4;
+    color: #c0006e;
+    background: rgba(255, 102, 196, 0.06);
+    transform: translateY(-1px);
+}
+
+.promotion-option-btn:active {
+    transform: scale(0.95);
+}
+
+.promotion-symbol {
+    font-size: 38px;
+    line-height: 1;
+}
+
+.promotion-piece-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b5c4e;
+}
+
+.promotion-option-btn:hover .promotion-piece-label {
+    color: #c0006e;
+}

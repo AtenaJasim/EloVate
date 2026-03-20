@@ -471,19 +471,13 @@ export function useChessGame() {
 
     const playerTurnColor = playerColor === "white" ? "w" : "b";
 
-    function handlePlayerMove(sourceSquare, targetSquare, piece) {
+    function handlePlayerMove(sourceSquare, targetSquare, promotionPiece) {
         if (!engineReady || isThinking) return false;
         if (game.turn() !== playerTurnColor) return false;
         if (!playerAnalysisRef.current.lines.length) return false;
 
         const positionBeforeMove = game.fen();
         const gameCopy = new Chess(positionBeforeMove);
-
-        const isPawnPromotion =
-            (piece === "wP" && sourceSquare[1] === "7" && targetSquare[1] === "8") ||
-            (piece === "bP" && sourceSquare[1] === "2" && targetSquare[1] === "1");
-
-        const promotionPiece = isPawnPromotion ? "q" : undefined;
 
         const moveResult = gameCopy.move({
             from: sourceSquare,
@@ -495,8 +489,7 @@ export function useChessGame() {
 
         setUndoStack((prev) => [...prev, positionBeforeMove]);
 
-        const playerUciMove = `${moveResult.from}${moveResult.to}${moveResult.promotion || ""
-            }`;
+        const playerUciMove = `${moveResult.from}${moveResult.to}${moveResult.promotion || ""}`;
 
         lastPlayerMoveMetaRef.current = {
             positionBeforeMove,
