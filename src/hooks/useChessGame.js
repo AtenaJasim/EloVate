@@ -44,7 +44,6 @@ export function useChessGame() {
     const [game, setGame] = useState(() => new Chess());
     const [engineReady, setEngineReady] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
-
     const [lastPlayerMove, setLastPlayerMove] = useState(
         DEFAULT_LAST_PLAYER_MOVE
     );
@@ -57,7 +56,6 @@ export function useChessGame() {
     const [suggestedBetterMove, setSuggestedBetterMove] = useState(
         DEFAULT_SUGGESTED_BETTER_MOVE
     );
-
     const [difficulty, setDifficulty] = useState("medium");
     const [playerColor, setPlayerColor] = useState("white");
     const [undoStack, setUndoStack] = useState([]);
@@ -68,7 +66,6 @@ export function useChessGame() {
     const gameRef = useRef(game);
     const didInitRef = useRef(false);
     const searchIdRef = useRef(0);
-
     const playerAnalysisRef = useRef(
         createEmptyPlayerAnalysis(game.fen(), game.turn())
     );
@@ -88,6 +85,48 @@ export function useChessGame() {
         setMoveRatingLabel(DEFAULT_MOVE_RATING_LABEL);
         setMoveRatingDescription(DEFAULT_MOVE_RATING_DESCRIPTION);
         setSuggestedBetterMove(DEFAULT_SUGGESTED_BETTER_MOVE);
+    }
+
+    function applyGameOverFeedback(completedGame) {
+        if (completedGame.isCheckmate()) {
+            setMoveRatingLabel("Checkmate");
+            setMoveRatingDescription("That move ended the game with checkmate.");
+            setSuggestedBetterMove("Game over");
+            return;
+        }
+
+        if (completedGame.isStalemate()) {
+            setMoveRatingLabel("Stalemate");
+            setMoveRatingDescription(
+                "No legal moves remain and the king is not in check."
+            );
+            setSuggestedBetterMove("Tie");
+            return;
+        }
+
+        if (completedGame.isInsufficientMaterial()) {
+            setMoveRatingLabel("Draw");
+            setMoveRatingDescription(
+                "The game is drawn because neither side has enough material to mate."
+            );
+            setSuggestedBetterMove("Tie");
+            return;
+        }
+
+        if (completedGame.isThreefoldRepetition()) {
+            setMoveRatingLabel("Draw");
+            setMoveRatingDescription(
+                "The same position was repeated three times."
+            );
+            setSuggestedBetterMove("Tie");
+            return;
+        }
+
+        if (completedGame.isDraw()) {
+            setMoveRatingLabel("Draw");
+            setMoveRatingDescription("The game ended in a draw.");
+            setSuggestedBetterMove("Tie");
+        }
     }
 
     function getBotSettings() {
@@ -151,7 +190,6 @@ export function useChessGame() {
         };
 
         pendingRef.current = createEmptyPendingState(pendingRef.current.searchId);
-
         engineRef.current.postMessage("stop");
         engineRef.current.postMessage("isready");
     }
@@ -194,7 +232,6 @@ export function useChessGame() {
 
     function startNewGame(color) {
         const newGame = new Chess();
-
         gameRef.current = newGame;
         setGame(newGame);
         resetMoveFeedback();
@@ -332,12 +369,23 @@ export function useChessGame() {
                 if (mode === "rate-player-move") {
                     const meta = lastPlayerMoveMetaRef.current;
 
-                    if (!meta || !lines.length) {
+                    if (!meta) {
                         setIsThinking(false);
                         return;
                     }
 
-                    const afterSideToMove = new Chess(meta.positionAfterMove).turn();
+                    const gameAfterPlayer = new Chess(meta.positionAfterMove);
+
+                    if (!lines.length) {
+                        if (gameAfterPlayer.isGameOver()) {
+                            applyGameOverFeedback(gameAfterPlayer);
+                        }
+
+                        setIsThinking(false);
+                        return;
+                    }
+
+                    const afterSideToMove = gameAfterPlayer.turn();
                     const afterBestLine = lines[0];
                     const afterPlayerValue = lineToPlayerValue(
                         afterBestLine,
@@ -370,11 +418,10 @@ export function useChessGame() {
                         })
                     );
 
-                    const gameAfterPlayer = new Chess(meta.positionAfterMove);
-
                     if (!gameAfterPlayer.isGameOver()) {
                         requestComputerMove(meta.positionAfterMove);
                     } else {
+                        applyGameOverFeedback(gameAfterPlayer);
                         setIsThinking(false);
                     }
 
@@ -408,6 +455,7 @@ export function useChessGame() {
                     if (!gameCopy.isGameOver()) {
                         analyzePlayerTurn(gameCopy.fen());
                     } else {
+                        applyGameOverFeedback(gameCopy);
                         setIsThinking(false);
                     }
                 }
@@ -469,6 +517,12 @@ export function useChessGame() {
         gameRef.current = gameCopy;
         setGame(gameCopy);
 
+        if (gameCopy.isGameOver()) {
+            applyGameOverFeedback(gameCopy);
+            setIsThinking(false);
+            return true;
+        }
+
         ratePlayerMove(gameCopy.fen());
         return true;
     }
@@ -481,12 +535,11 @@ export function useChessGame() {
         setUndoStack((prev) => prev.slice(0, -1));
 
         const restoredGame = new Chess(previousFen);
-
         gameRef.current = restoredGame;
         setGame(restoredGame);
         resetMoveFeedback();
-
         lastPlayerMoveMetaRef.current = null;
+
         playerAnalysisRef.current = createEmptyPlayerAnalysis(
             previousFen,
             restoredGame.turn()

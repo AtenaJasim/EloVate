@@ -3,6 +3,45 @@ import ControlPanel from "./components/ControlPanel";
 import AnalysisPanel from "./components/AnalysisPanel";
 import { useChessGame } from "./hooks/useChessGame";
 
+function getGameResult(game) {
+  if (game.isCheckmate()) {
+    return {
+      title: "Checkmate",
+      detail: `${game.turn() === "w" ? "Black" : "White"} wins!`,
+    };
+  }
+
+  if (game.isStalemate()) {
+    return {
+      title: "Stalemate",
+      detail: "Tie",
+    };
+  }
+
+  if (game.isInsufficientMaterial()) {
+    return {
+      title: "Draw",
+      detail: "Tie",
+    };
+  }
+
+  if (game.isThreefoldRepetition()) {
+    return {
+      title: "Draw",
+      detail: "Tie",
+    };
+  }
+
+  if (game.isDraw()) {
+    return {
+      title: "Draw",
+      detail: "Tie",
+    };
+  }
+
+  return null;
+}
+
 export default function App() {
   const {
     game,
@@ -19,15 +58,25 @@ export default function App() {
     handleSettingsChange,
   } = useChessGame();
 
-  const isCheckmate = game.isCheckmate();
-  const winner = isCheckmate
-    ? game.turn() === "w"
-      ? "Black"
-      : "White"
-    : "";
+  const gameResult = getGameResult(game);
 
   return (
     <>
+      {gameResult && (
+        <div className="settings-overlay">
+          <div
+            className="settings-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="settings-title">{gameResult.title}</h3>
+            <p className="checkmate-message">{gameResult.detail}</p>
+            <button className="settings-apply-btn" onClick={handleNewGame}>
+              Start New Game
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="app-shell">
         <section className="left-column">
           <div className="controls-wrap">
@@ -55,30 +104,6 @@ export default function App() {
           <ChessBoardPanel fen={game.fen()} onPieceDrop={handlePlayerMove} />
         </section>
       </div>
-
-      {isCheckmate && (
-        <div className="settings-overlay">
-          <div
-            className="settings-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="settings-title">Checkmate</h3>
-
-            <p className="checkmate-message">
-              {winner} wins!
-            </p>
-
-            <div className="settings-actions">
-              <button
-                className="settings-apply-btn"
-                onClick={handleNewGame}
-              >
-                Start New Game
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
