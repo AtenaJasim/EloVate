@@ -1,7 +1,7 @@
 export const BOT_SETTINGS_BY_DIFFICULTY = {
-    easy: { depth: 2, skillLevel: 0 },
-    medium: { depth: 8, skillLevel: 8 },
-    hard: { depth: 18, skillLevel: 20 },
+    easy: { depth: 1, skillLevel: 0 },
+    medium: { depth: 7, skillLevel: 7 },
+    hard: { depth: 17, skillLevel: 19 },
 };
 
 export const ANALYSIS_DEPTH = 14;

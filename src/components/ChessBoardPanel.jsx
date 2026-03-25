@@ -7,7 +7,6 @@ export default function ChessBoardPanel({ fen, onPieceDrop }) {
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [optionSquares, setOptionSquares] = useState({});
     const [pendingPromotion, setPendingPromotion] = useState(null);
-    // pendingPromotion: { from, to, color } | null
 
     function getMovesFrom(square) {
         const game = new Chess(fen);
