@@ -1,8 +1,12 @@
-export const BOT_SETTINGS_BY_DIFFICULTY = {
-    easy: { depth: 1, skillLevel: 0 },
-    medium: { depth: 7, skillLevel: 7 },
-    hard: { depth: 17, skillLevel: 19 },
-};
+export const DIFFICULTY_OPTIONS = [
+    { label: "Easy", value: "easy", depth: 1, skillLevel: 1 },
+    { label: "Medium", value: "medium", depth: 4, skillLevel: 8 },
+    { label: "Hard", value: "hard", depth: 8, skillLevel: 15 },
+];
+
+export const BOT_SETTINGS_BY_DIFFICULTY = Object.fromEntries(
+    DIFFICULTY_OPTIONS.map(({ value, ...settings }) => [value, settings])
+);
 
 export const ANALYSIS_DEPTH = 14;
 export const ANALYSIS_MULTIPV = 3;

@@ -3,7 +3,7 @@ import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import PawnPromotionModal from "./PawnPromotionModal";
 
-export default function ChessBoardPanel({ fen, onPieceDrop }) {
+export default function ChessBoardPanel({ fen, onPieceDrop, playerColor }) {
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [optionSquares, setOptionSquares] = useState({});
     const [pendingPromotion, setPendingPromotion] = useState(null);
@@ -18,12 +18,37 @@ export default function ChessBoardPanel({ fen, onPieceDrop }) {
         return moves.some((m) => m.to === targetSquare && m.promotion);
     }
 
+    function selectSquare(square) {
+        const game = new Chess(fen);
+        const moves = getMovesFrom(square);
+
+        if (moves.length === 0) {
+            setSelectedSquare(null);
+            setOptionSquares({});
+            return;
+        }
+
+        setSelectedSquare(square);
+        setOptionSquares(
+            Object.fromEntries(
+                moves.map((m) => [
+                    m.to,
+                    {
+                        background: game.get(m.to)
+                            ? "radial-gradient(circle, rgba(0,0,0,0.3) 55%, transparent 60%)"
+                            : "radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 30%)",
+                        borderRadius: "50%",
+                    },
+                ])
+            )
+        );
+    }
+
     function handleSquareClick(squareData) {
         const square =
             typeof squareData === "string" ? squareData : squareData?.square;
         if (!square) return;
 
-        // If a square is already selected, try to move to the clicked square
         if (selectedSquare) {
             const moves = getMovesFrom(selectedSquare);
             const targetMove = moves.find((m) => m.to === square);
@@ -45,35 +70,19 @@ export default function ChessBoardPanel({ fen, onPieceDrop }) {
                 onPieceDrop(selectedSquare, square, undefined);
                 return;
             }
-        }
-
-        // Select the clicked square if it has legal moves
-        const moves = getMovesFrom(square);
-
-        if (moves.length === 0) {
-            setSelectedSquare(null);
-            setOptionSquares({});
+            selectSquare(square);
             return;
         }
 
-        const game = new Chess(fen);
-        setSelectedSquare(square);
-        setOptionSquares(
-            Object.fromEntries(
-                moves.map((m) => [
-                    m.to,
-                    {
-                        background: game.get(m.to)
-                            ? "radial-gradient(circle, rgba(0,0,0,0.3) 55%, transparent 60%)"
-                            : "radial-gradient(circle, rgba(0,0,0,0.2) 25%, transparent 30%)",
-                        borderRadius: "50%",
-                    },
-                ])
-            )
-        );
+        selectSquare(square);
     }
 
     function handlePieceDrop({ sourceSquare, targetSquare }) {
+        if (sourceSquare === targetSquare) {
+            handleSquareClick(sourceSquare);
+            return false;
+        }
+
         setSelectedSquare(null);
         setOptionSquares({});
 
@@ -84,7 +93,7 @@ export default function ChessBoardPanel({ fen, onPieceDrop }) {
                 to: targetSquare,
                 color: game.turn(),
             });
-            return false; // don't execute the move yet
+            return false;
         }
 
         return onPieceDrop(sourceSquare, targetSquare, undefined);
@@ -117,6 +126,7 @@ export default function ChessBoardPanel({ fen, onPieceDrop }) {
                 <Chessboard
                     options={{
                         position: fen,
+                        boardOrientation: playerColor,
                         onPieceDrop: handlePieceDrop,
                         onSquareClick: handleSquareClick,
                         customSquareStyles: squareStyles,

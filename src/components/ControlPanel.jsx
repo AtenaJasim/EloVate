@@ -1,10 +1,5 @@
 import { useState } from "react";
-
-const DIFFICULTIES = [
-    { label: "Easy", value: "easy", depth: 3 },
-    { label: "Medium", value: "medium", depth: 8 },
-    { label: "Hard", value: "hard", depth: 15 },
-];
+import { DIFFICULTY_OPTIONS } from "../constants/chessConfig";
 
 export default function ControlPanel({
     onNewGame,
@@ -26,7 +21,10 @@ export default function ControlPanel({
     }
 
     function applySettings() {
-        onSettingsChange({ difficulty: pendingDifficulty, playerColor: pendingColor });
+        onSettingsChange({
+            difficulty: pendingDifficulty,
+            playerColor: pendingColor,
+        });
         setSettingsOpen(false);
     }
 
@@ -47,6 +45,7 @@ export default function ControlPanel({
                         />
                     </div>
                 </div>
+
                 <div className="tutor-text">
                     <h1 className="tutor-title">EloVate</h1>
                     <p className="tutor-subtitle">An AI Chess Tutor</p>
@@ -91,10 +90,13 @@ export default function ControlPanel({
                         <div className="settings-section">
                             <label className="settings-label">Difficulty</label>
                             <div className="settings-options">
-                                {DIFFICULTIES.map((d) => (
+                                {DIFFICULTY_OPTIONS.map((d) => (
                                     <button
                                         key={d.value}
-                                        className={`settings-option-btn ${pendingDifficulty === d.value ? "settings-option-btn--active" : ""}`}
+                                        className={`settings-option-btn ${pendingDifficulty === d.value
+                                            ? "settings-option-btn--active"
+                                            : ""
+                                            }`}
                                         onClick={() => setPendingDifficulty(d.value)}
                                     >
                                         {d.label}
@@ -107,13 +109,20 @@ export default function ControlPanel({
                             <label className="settings-label">Play As</label>
                             <div className="settings-options">
                                 <button
-                                    className={`settings-option-btn ${pendingColor === "white" ? "settings-option-btn--active" : ""}`}
+                                    className={`settings-option-btn ${pendingColor === "white"
+                                        ? "settings-option-btn--active"
+                                        : ""
+                                        }`}
                                     onClick={() => setPendingColor("white")}
                                 >
                                     ♙ White
                                 </button>
+
                                 <button
-                                    className={`settings-option-btn ${pendingColor === "black" ? "settings-option-btn--active" : ""}`}
+                                    className={`settings-option-btn ${pendingColor === "black"
+                                        ? "settings-option-btn--active"
+                                        : ""
+                                        }`}
                                     onClick={() => setPendingColor("black")}
                                 >
                                     ♟ Black
@@ -126,7 +135,7 @@ export default function ControlPanel({
                                 Cancel
                             </button>
                             <button className="settings-apply-btn" onClick={applySettings}>
-                                Apply &amp; New Game
+                                Apply & New Game
                             </button>
                         </div>
                     </div>

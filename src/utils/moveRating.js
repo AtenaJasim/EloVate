@@ -121,38 +121,40 @@ export function getRatingResult({
         moveContext.isMaterialSacrifice &&
         standoutGap >= RATING_THRESHOLDS.brilliantGap;
 
+    if (isBestMove) {
+        if (isWinningMateLineForPlayer) {
+            return {
+                label: "Best Move",
+                description: "Best Move. You found the forced mating line.",
+                evalLoss,
+                bestUciMove,
+            };
+        }
+
+        if (qualifiesAsBrilliant) {
+            return {
+                label: "Brilliant",
+                description:
+                    "Brilliant. You found the best move and it stands out as a strong sacrifice idea.",
+                evalLoss,
+                bestUciMove,
+            };
+        }
+
+        return {
+            label: "Best Move",
+            description: afterOpponentMate
+                ? "Best Move. The position is lost, but this was still the best try."
+                : "Best Move. You found the engine's top move here.",
+            evalLoss,
+            bestUciMove,
+        };
+    }
+
     if (afterOpponentMate) {
         return {
             label: "Blunder",
             description: "Blunder. This move allows a forced mate.",
-            evalLoss,
-            bestUciMove,
-        };
-    }
-
-    if (isBestMove && isWinningMateLineForPlayer) {
-        return {
-            label: "Best Move",
-            description: "Best Move. You found the forced mating line.",
-            evalLoss,
-            bestUciMove,
-        };
-    }
-
-    if (qualifiesAsBrilliant) {
-        return {
-            label: "Brilliant",
-            description:
-                "Brilliant. You found the best move and it stands out as a strong sacrifice idea.",
-            evalLoss,
-            bestUciMove,
-        };
-    }
-
-    if (isBestMove) {
-        return {
-            label: "Best Move",
-            description: "Best Move. You found the engine's top move here.",
             evalLoss,
             bestUciMove,
         };
