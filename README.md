@@ -1,31 +1,47 @@
-# EloVate
-![EloVate Screenshot](./public/elovate.png)
-EloVate is an AI chess tutor built to help players improve while they play!
+<h1 align = "center">EloVate</h1>
 
-While playing against a computer, users also get feedback on their moves. After each move, the app evaluates what was played, explains how strong or weak it was, and suggests a better move when one exists.
+<h3 align="center">Your personal AI chess coach</h3>
 
-## Features
+![EloVate Screenshot](https://github.com/AtenaJasim/EloVate/raw/main/public/elovate.png)
 
-- Play against the computer at different difficulty levels
-- Choose to play as White or Black
-- Get move-by-move feedback after every turn
-- See how your move was evaluated
-- Get a stronger suggested move from the engine
-- Undo the last move
-- Start a new game at any time
+## Purpose
 
-## How It Works
+Most chess apps let you play against a computer, but don't explain what you did wrong or how to improve.
+EloVate gives you real time coaching while you play. After every move, you find out how strong or weak your choice was, and you get a better suggestion when one exists.
 
-EloVate uses Stockfish to analyze positions and compare the move you played against stronger engine choices.
+The goal is to help players grow their game naturally, without having to leave the board to study.
 
-After you make a move, the app:
-- checks the position with the engine
-- rates your move
-- explains the result
-- shows a better move when available
-- then lets the computer respond
+## How it works
 
-## Tech Stack
+1. Choose your color and a difficulty level to start a new game.
+2. Make a move on the board.
+3. EloVate sends the position to Stockfish for evaluation.
+4. Your move is rated and compared against the engine's best choice.
+5. The app explains the result and shows a stronger move when one is available.
+6. The computer plays its response and the cycle continues.
+
+## Move feedback
+
+After each move you make, EloVate:
+
+- Rates the move (e.g. excellent, good, inaccuracy, blunder)
+- Explains why the move was strong or weak
+- Shows a better move from the engine when one exists
+
+## Game controls
+
+- Play as White or Black
+- Adjust difficulty at the start of any game
+- Undo the last move at any time
+- Start a new game whenever you like
+
+## Play here: deployed on Vercel!
+https://elovate-neon.vercel.app/
+
+As a webapp it is playable on both mobile and desktop applications! If using a mobile device such as a phone or ipad, simple click the link and add to your homescreen to get the app experience!
+
+
+## Tech stack
 
 - React
 - Vite
