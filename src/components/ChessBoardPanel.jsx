@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import PawnPromotionModal from "./PawnPromotionModal";
@@ -7,6 +7,10 @@ export default function ChessBoardPanel({ fen, onPieceDrop, playerColor }) {
     const [selectedSquare, setSelectedSquare] = useState(null);
     const [optionSquares, setOptionSquares] = useState({});
     const [pendingPromotion, setPendingPromotion] = useState(null);
+    const justDroppedRef = useRef(false);
+    const boardRef = useRef(null);
+
+    const handleSquareClickRef = useRef(null);
 
     function getMovesFrom(square) {
         const game = new Chess(fen);
@@ -45,6 +49,11 @@ export default function ChessBoardPanel({ fen, onPieceDrop, playerColor }) {
     }
 
     function handleSquareClick(squareData) {
+        if (justDroppedRef.current) {
+            justDroppedRef.current = false;
+            return;
+        }
+
         const square =
             typeof squareData === "string" ? squareData : squareData?.square;
         if (!square) return;
@@ -77,11 +86,75 @@ export default function ChessBoardPanel({ fen, onPieceDrop, playerColor }) {
         selectSquare(square);
     }
 
+    handleSquareClickRef.current = handleSquareClick;
+    useEffect(() => {
+        const el = boardRef.current;
+        if (!el) return;
+
+        let touchStartTime = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        const getSquareFromPoint = (clientX, clientY) => {
+            const rect = el.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            let fileIndex = Math.floor((x / rect.width) * 8);
+            let rankIndex = Math.floor((y / rect.height) * 8);
+
+            if (fileIndex < 0 || fileIndex > 7 || rankIndex < 0 || rankIndex > 7)
+                return null;
+
+            if (playerColor === "black") {
+                fileIndex = 7 - fileIndex;
+                rankIndex = 7 - rankIndex;
+            }
+
+            const file = ["a", "b", "c", "d", "e", "f", "g", "h"][fileIndex];
+            const rank = (8 - rankIndex).toString();
+            return file + rank;
+        };
+
+        const onTouchStart = (e) => {
+            touchStartTime = Date.now();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        };
+
+        const onTouchEnd = (e) => {
+            if (justDroppedRef.current) return;
+
+            const touch = e.changedTouches[0];
+            const dx = Math.abs(touch.clientX - touchStartX);
+            const dy = Math.abs(touch.clientY - touchStartY);
+            const duration = Date.now() - touchStartTime;
+
+            if (duration < 300 && dx < 12 && dy < 12) {
+                const square = getSquareFromPoint(touch.clientX, touch.clientY);
+                if (square) {
+                    e.preventDefault();
+                    handleSquareClickRef.current(square);
+                }
+            }
+        };
+
+        el.addEventListener("touchstart", onTouchStart, { passive: true });
+        el.addEventListener("touchend", onTouchEnd);
+        return () => {
+            el.removeEventListener("touchstart", onTouchStart);
+            el.removeEventListener("touchend", onTouchEnd);
+        };
+    }, [playerColor]);
+
     function handlePieceDrop({ sourceSquare, targetSquare }) {
         if (sourceSquare === targetSquare) {
             handleSquareClick(sourceSquare);
             return false;
         }
+
+        justDroppedRef.current = true;
+        setTimeout(() => { justDroppedRef.current = false; }, 300);
 
         setSelectedSquare(null);
         setOptionSquares({});
@@ -122,7 +195,7 @@ export default function ChessBoardPanel({ fen, onPieceDrop, playerColor }) {
                 />
             )}
 
-            <div className="board-shell">
+            <div className="board-shell" ref={boardRef}>
                 <Chessboard
                     options={{
                         position: fen,
