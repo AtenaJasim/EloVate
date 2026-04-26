@@ -101,7 +101,7 @@ export default function App() {
         </section>
 
         <section className="board-column">
-          <ChessBoardPanel fen={game.fen()} onPieceDrop={handlePlayerMove} />
+          <ChessBoardPanel fen={game.fen()} onPieceDrop={handlePlayerMove} playerColor={playerColor} />
         </section>
       </div>
     </>
