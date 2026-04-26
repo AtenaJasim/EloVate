@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700;800&display=swap');
 
+html {
+    background: #f2ebdd;
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -469,7 +473,7 @@ button {
     }
 
     .controls-wrap {
-        width: 280px;
+        width: 460px;
     }
 
     .analysis-wrap {
@@ -477,7 +481,7 @@ button {
     }
 
     .tutor-card {
-        width: 430px;
+        width: 460px;
     }
 
     .tutor-title {
@@ -497,10 +501,98 @@ button {
     }
 
     .board-shell {
-        width: min(620px, 100%);
+        width: min(630px, 100%);
         padding: 12px;
     }
 }
+
+
+/* ── iPad Portrait (~820px-1024px) ─────────────────────── */
+@media (min-width: 820px) and (max-width: 1024px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .board-column {
+        order: 3;
+        justify-content: center;
+    }
+
+    .left-column {
+        order: 1;
+    }
+
+    .board-shell {
+        width: 85%;
+        padding: 12px;
+    }
+
+    .controls-wrap {
+        width: 100%;
+        order: 2;
+    }
+
+    .analysis-wrap {
+        width: 100%;
+        order: 3;
+    }
+
+    .tutor-card {
+        width: 100%;
+        height: 110px;
+    }
+
+    .control-navbar {
+        width: 100%;
+        height: 50px;
+    }
+
+    .nav-icon-btn {
+        width: 55px;
+        height: 44px;
+    }
+
+    .tutor-title {
+        font-size: 50px;
+    }
+
+    .tutor-subtitle {
+        font-size: 12px;
+    }
+
+    .tutor-image-box {
+        width: 90px;
+    }
+
+    .analysis-square {
+        padding: 10px;
+        gap: 6px;
+        min-height: 0;
+    }
+
+    .analysis-block {
+        padding: 8px;
+        height: 75px;
+    }
+
+    .analysis-kicker {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+
+    .analysis-main {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .analysis-subtext {
+        font-size: 14px;
+        margin: 2px 0 0;
+    }
+}
+
 
 /* ── PHONE (< 600px) ─────────────────────────────────────── */
 @media (max-width: 599px) {
